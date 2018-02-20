@@ -1,20 +1,16 @@
 import requests
 import logging
+import coloredlogs
 from requests_toolbelt import MultipartEncoder
-import nsfval.sdk.api.settings
 
 log = logging.getLogger(__name__)
 
-base_url = 'http://127.0.0.1:5050/'
-
-
-def post(endpoint, format, flags='sit', post_file=None, post_path=None, addt_files=None):
-    url = base_url + endpoint
+def post(url, o_format, flags='sit', post_file=None, post_path=None, addt_files=None):
 
     assert post_file or post_path, "Must specify a 'post_file' or 'post_path''"
 
     post_data = {
-        'format': format,
+        'format': o_format,
         'source': 'embedded' if post_file else 'local',
         'syntax': 'true' if 's' in flags else 'false',
         'integrity': 'true' if 'i' in flags else 'false',
@@ -38,7 +34,9 @@ def post(endpoint, format, flags='sit', post_file=None, post_path=None, addt_fil
     encoded_data = MultipartEncoder(post_data)
     post_headers = {'Content-Type': encoded_data.content_type}
     post_response = requests.post(url, headers=post_headers, data=encoded_data)
+
     return post_response
+
 
 def get():
     pass
