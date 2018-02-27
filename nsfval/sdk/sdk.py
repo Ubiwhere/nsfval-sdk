@@ -32,7 +32,6 @@ def _validate_lib(o_type, o_format, flags, o_file, addt_files=None):
     from nsfval.adapter import LoaderPlugin
 
     userconf = Userconf()
-    userconf.load_configuration(configfile=Userconf.defaultconfigfile)
     pluginmanager.load_plugins(userconf.plugins_dir)
     loader = pluginmanager.get_loader_plugin(o_format)
 
