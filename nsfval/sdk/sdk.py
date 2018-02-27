@@ -6,11 +6,14 @@ from nsfval.sdk import api_client
 log = logging.getLogger(__name__)
 coloredlogs.install(level=settings.LOG_LEVEL)
 
-# keep track of validation results
-results = {}
+
+def _build_result(error_count, warning_count):
+    return {'error_count': error_count,
+            'warning_count': warning_count}
 
 
-def _validate(o_type, o_format, flags, o_file, addt_files=None, report=False):
+def _validate_api(o_type, o_format, flags, o_file, addt_files=None):
+
     endpoint = 'validate/{0}'.format(o_type)
 
     rsp = api_client.post(endpoint, o_format, flags=flags, post_file=o_file, addt_files=addt_files)
@@ -19,12 +22,38 @@ def _validate(o_type, o_format, flags, o_file, addt_files=None, report=False):
         return
 
     content = rsp.json()
+    return _build_result(content['error_count'], content['warning_count'])
 
-    # make sure results are not repeated by creating a dict for them (key: resource_id)
-    response = results[content['resource_id']] = dict()
-    response['error_count'] = content['error_count']
-    response['warning_count'] = content['warning_count']
-    return response
+
+def _validate_lib(o_type, o_format, flags, o_file, addt_files=None):
+    from nsfval.core import Validator
+    from nsfval.core import pluginmanager
+    from nsfval.config import Userconf
+    from nsfval.adapter import LoaderPlugin
+
+    userconf = Userconf()
+    userconf.load_configuration(configfile=Userconf.defaultconfigfile)
+    pluginmanager.load_plugins(userconf.plugins_dir)
+    loader = pluginmanager.get_loader_plugin(o_format)
+
+    val = Validator.create_validator(
+        loader,
+        True if 's' in flags else False,
+        True if 'i' in flags else False,
+        True if 't' in flags else False,
+        addt_files if addt_files else list(),
+        ['yaml', 'yml'],
+        True
+    )
+    validate_callback = getattr(val, 'validate_{0}'.format(o_type))
+    validate_callback(o_file)
+
+    return _build_result(val.error_count, val.warning_count)
+
+
+def _validate(o_type, o_format, flags, o_file, addt_files=None, report=False):
+    result = validate_function(o_type, o_format, flags, o_file, addt_files=addt_files)
+    return result
 
 
 def validate_ns(o_format, flags, nsd_file, addt_files=None, report=False):
@@ -58,3 +87,7 @@ def update_config(nsfval_host=None, nsfval_port=None, log_level=None):
     if log_level:
         settings.LOG_LEVEL = log_level
         coloredlogs.install(level=log_level)
+
+
+# sdk callback functions (service api or core library)
+validate_function = locals()['_validate_{}'.format(settings.SDK_MODE)]
