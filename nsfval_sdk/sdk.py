@@ -1,10 +1,8 @@
 import logging
-import coloredlogs
-from nsfval.sdk import settings
-from nsfval.sdk import api_client
+from nsfvalsdk import settings
+from nsfvalsdk.api import client as api_client
 
 log = logging.getLogger(__name__)
-coloredlogs.install(level=settings.LOG_LEVEL)
 
 
 def _build_result(error_count, warning_count):
@@ -26,17 +24,11 @@ def _validate_api(o_type, o_format, flags, o_file, addt_files=None):
 
 
 def _validate_lib(o_type, o_format, flags, o_file, addt_files=None):
-    from nsfval.core import Validator
-    from nsfval.core import pluginmanager
-    from nsfval.config import Userconf
-    from nsfval.adapter import LoaderPlugin
 
-    userconf = Userconf()
-    pluginmanager.load_plugins(userconf.plugins_dir)
-    loader = pluginmanager.get_loader_plugin(o_format)
+    from nsfval.core import Validator
 
     val = Validator.create_validator(
-        loader,
+        o_format,
         True if 's' in flags else False,
         True if 'i' in flags else False,
         True if 't' in flags else False,
@@ -57,6 +49,7 @@ def _validate(o_type, o_format, flags, o_file, addt_files=None, report=False):
 
 def validate_ns(o_format, flags, nsd_file, addt_files=None, report=False):
     """Validate a network service."""
+    log.info("Validating NS '{0}' [fmt='{1}', flags='{2}']".format(nsd_file, o_format, flags))
     return _validate('ns', o_format, flags, nsd_file, addt_files=addt_files, report=report)
 
 

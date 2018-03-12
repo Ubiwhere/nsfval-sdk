@@ -1,6 +1,6 @@
 import requests
 import logging
-from nsfval.sdk import settings
+from nsfvalsdk import settings
 
 log = logging.getLogger(__name__)
 
