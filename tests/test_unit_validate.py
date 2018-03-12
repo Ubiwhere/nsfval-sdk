@@ -1,6 +1,13 @@
 import unittest
 import os
-from nsfval.sdk import validator
+import logging
+import coloredlogs
+
+from nsfvalsdk import sdk as validator
+
+# Always log debug in tests
+log = logging.getLogger(__name__)
+coloredlogs.install(log=log, level='debug')
 
 
 class UnitValidateTests(unittest.TestCase):

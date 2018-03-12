@@ -1,5 +1,6 @@
 from setuptools import setup, find_packages
 
+test_requirements = ['pytest']
 setup(
     name='nsfval-sdk',
     license='Apache License, Version 2.0',
@@ -7,8 +8,6 @@ setup(
     author='Luís Conceição',
     author_email='lconceicao@ubiwhere.com',
     packages=find_packages(),
-    install_requires=['requests', 'pyaml', 'configloader', 'coloredlogs'],
-    test_suite='sdk',
-    setup_requires=['pytest-runner'],
-    tests_require=['pytest'],
+    install_requires=['requests', 'pyaml', 'coloredlogs'] + test_requirements,
+    test_suite='nsfval-sdk',
 )
