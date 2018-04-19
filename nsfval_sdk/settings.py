@@ -17,7 +17,7 @@ if coloredlogs:
         level=LOG_LEVEL,
         fmt=os.environ.get('COLOREDLOGS_LOG_FORMAT', coloredlogs.DEFAULT_LOG_FORMAT),
         # level_styles=os.environ.get('COLOREDLOGS_LEVEL_STYLES', coloredlogs.DEFAULT_LEVEL_STYLES),
-        # field_styles=os.environ.get('COLOREDLOGS_FIELD_STYLES', coloredlogs.DEFAULT_FIELD_STYLES),
+        field_styles=os.environ.get('COLOREDLOGS_FIELD_STYLES', coloredlogs.DEFAULT_FIELD_STYLES),
     )
 
 
