@@ -1,6 +1,6 @@
 import requests
 import logging
-from nsfvalsdk import settings
+from nsfval_sdk import settings
 
 log = logging.getLogger(__name__)
 
@@ -39,5 +39,8 @@ def post(endpoint, o_format, flags='sit', post_file=None, post_path=None, addt_f
     return post_response
 
 
-def get(url, resource_id=None):
-    pass
+def get(endpoint):
+    url = _build_url(endpoint)
+    get_response = requests.get(url)
+
+    return get_response
