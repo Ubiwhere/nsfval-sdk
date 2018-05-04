@@ -34,20 +34,32 @@ def _validate_api(o_type, o_format, flags, o_file, addt_files=None):
         for warning in content['warnings']:
             result['issues'].append(warning)
 
+    # Get topology
     rsp = api_client.get('report/topology/{0}'.format(resource_id))
-    topology = rsp.json()
+    if rsp.status_code != 200:
+        topology = []
+    else:
+        topology = rsp.json()
 
+    # Get forwarding graph
     rsp = api_client.get('report/fwgraph/{0}'.format(resource_id))
-    fwgraph = rsp.json()
+    if rsp.status_code != 200:
+        fwgraph = []
+    else:
+        fwgraph = rsp.json()
 
+    # Get validation log
     rsp = api_client.get('report/log/{0}'.format(resource_id))
-    log = rsp.text
+    if rsp.status_code != 200:
+        log = []
+    else:
+        log = rsp.text
 
     # Build response
     rsp = dict()
     rsp['result'] = result
     rsp['topology'] = topology
-    rsp['fwgraph'] = list(fwgraph)
+    rsp['fwgraph'] = fwgraph
     rsp['log'] = log
 
     return rsp
