@@ -37,16 +37,16 @@ def _validate_api(o_type, o_format, flags, o_file, addt_files=None):
     # Get topology
     rsp = api_client.get('report/topology/{0}'.format(resource_id))
     if rsp.status_code != 200:
-        topology = []
+        topology = {}
     else:
-        topology = rsp.json()
+        topology = {'graph': rsp.text}
 
     # Get forwarding graph
     rsp = api_client.get('report/fwgraph/{0}'.format(resource_id))
     if rsp.status_code != 200:
-        fwgraph = []
+        fwgraph = {}
     else:
-        fwgraph = rsp.json()
+        fwgraph = {'graph': rsp.text}
 
     # Get validation log
     rsp = api_client.get('report/log/{0}'.format(resource_id))
